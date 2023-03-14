@@ -4,7 +4,7 @@ import {ImportDependency} from "src/model/ImportDependency";
 import {FileRepository} from 'src/repository/FileRepository';
 import fs from "fs";
 import readline from "readline";
-import {findFirstOf, findLastOf} from "src/repository/util/findSearchString";
+import {findFirstOf, findLastOf} from "src/util/findSearchString";
 
 export class FileRepositoryImpl implements FileRepository {
     readonly logger: Logger
