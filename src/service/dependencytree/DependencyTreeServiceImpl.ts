@@ -1,7 +1,7 @@
 import {DependencyTreeNode} from "src/model/DependencyTreeNode";
 import {FileType, SourceFile} from "src/model/File";
 import {FileRepository} from "src/repository/FileRepository";
-import {DependencyTreeService} from "src/service/DependencyTreeService";
+import {DependencyTreeService} from "src/service/dependencytree/DependencyTreeService";
 
 export class DependencyTreeServiceImpl implements DependencyTreeService{
     readonly fileRepository: FileRepository
