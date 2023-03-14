@@ -1,7 +1,6 @@
-import {DirectoryFile, File, SourceFile} from "src/model/File";
+import {SourceFile} from "src/model/File";
+import {ImportDependency} from "src/model/ImportDependency";
 
 export interface FileRepository {
-    listFilesInRootDirectory: (rootPath: string) => File[]
-    listFilesInDirectory: (directory: DirectoryFile) => File[]
     readImportsFromSourceFile: (sourceFile: SourceFile) => ImportDependency[]
 }
