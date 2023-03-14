@@ -1,16 +1,17 @@
 import {File} from "src/model/File";
 import {FileRepository} from 'src/repository/FileRepository';
+import {TODO} from "src/util/todo";
 
 export class FileRepositoryImpl implements FileRepository {
     listFilesInRootDirectory = (): File[] => {
-        throw Error("not implemented")
+        return TODO()
     }
 
     listFilesInDirectory = (): File[] => {
-        throw Error("not implemented")
+        return TODO()
     }
 
     readImportsFromSourceFile = (): ImportDependency[] => {
-        throw Error("not implemented")
+        return TODO()
     }
 }
