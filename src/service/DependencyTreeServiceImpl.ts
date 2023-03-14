@@ -1,7 +1,7 @@
 import {DependencyTreeNode} from "src/model/DependencyTreeNode";
+import {FileType, SourceFile} from "src/model/File";
 import {FileRepository} from "src/repository/FileRepository";
 import {DependencyTreeService} from "src/service/DependencyTreeService";
-import {TODO} from "src/util/todo";
 
 export class DependencyTreeServiceImpl implements DependencyTreeService{
     readonly fileRepository: FileRepository
@@ -10,7 +10,19 @@ export class DependencyTreeServiceImpl implements DependencyTreeService{
         this.fileRepository = fileRepository
     }
 
-    buildDependencyTreeFromRootPath = (): DependencyTreeNode => {
-        return TODO()
+    buildDependencyTreeFromFilePath = (rootPath: string): DependencyTreeNode => {
+        const sourceFile: SourceFile = { type: FileType.SOURCE_FILE, path: rootPath }
+        return this.buildDependencyTreeFromRootPathRec(sourceFile)
+    }
+
+    buildDependencyTreeFromRootPathRec = (sourceFile: SourceFile): DependencyTreeNode => {
+        const imports = this.fileRepository.readImportsFromSourceFile(sourceFile)
+        const dependencies = imports
+            .map(({to}) => this.buildDependencyTreeFromRootPathRec(to))
+
+        return {
+            nodeFile: sourceFile,
+            dependencies
+        }
     }
 }
