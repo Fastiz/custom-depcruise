@@ -1,9 +1,3 @@
-type Input = {
-    text: string
-}
+import {testRuleViolation} from "./cli/testRuleViolation";
 
-const test = (input: Input) => {
-    console.log(input.text)
-}
-
-test({text: 'hello world'})
+testRuleViolation(['./src/index.ts', 'FileRepositoryProvider', 'FileRepositoryImpl'])
