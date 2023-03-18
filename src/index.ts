@@ -1,3 +1,3 @@
-import { testRuleViolation } from 'src/cli/testRuleViolation'
+import { ruleViolationsCli } from 'src/cli/testRuleViolation'
 
-testRuleViolation(['src/index', 'FileRepositoryProvider', 'FileRepositoryImpl'])
+ruleViolationsCli(['src/index', './rules-config.json'])

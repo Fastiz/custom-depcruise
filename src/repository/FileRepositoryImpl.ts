@@ -5,7 +5,7 @@ import { type FileRepository } from 'src/repository/FileRepository'
 import fs from 'fs'
 import readline from 'readline'
 import { findFirstOf, findLastOf } from 'src/util/findSearchString'
-import { Observer } from '../util/observer'
+import { Observer } from 'src/util/observer'
 
 export class FileRepositoryImpl implements FileRepository {
   readonly logger: Logger
