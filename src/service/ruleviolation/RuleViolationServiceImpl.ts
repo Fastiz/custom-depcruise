@@ -28,10 +28,12 @@ export class RuleViolationServiceImpl implements RuleViolationService {
       return this.findViolationsRec(dependency, rules)
     })
 
-    return [
+    const allViolations = [
       ...nodeViolations,
       ...childrenViolations
     ]
+
+    return this.filterUniqueViolations(allViolations)
   }
 
   applyRules = (importDependency: ImportDependency, rules: ForbiddenDependencyRule[]): Violation[] => {
@@ -60,5 +62,24 @@ export class RuleViolationServiceImpl implements RuleViolationService {
     }
 
     return fromRegex.test(importDependency.from.path)
+  }
+
+  filterUniqueViolations = (violations: Violation[]): Violation[] => {
+    const extractKey = (violation: Violation): string => {
+      return `${violation.rule.name}:${violation.importDependency.from}:${violation.importDependency.to}`
+    }
+
+    const found = new Set<string>()
+
+    return violations.filter(violation => {
+      const key = extractKey(violation)
+
+      if (found.has(key)) {
+        return false
+      }
+
+      found.add(key)
+      return true
+    })
   }
 }
