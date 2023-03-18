@@ -1,7 +1,7 @@
-import {DependencyTreeNode} from "src/model/DependencyTreeNode";
-import {ForbiddenDependencyRule} from "src/model/ForbiddenDependencyRule";
-import {Violation} from "src/model/Violation";
+import { type DependencyTreeNode } from 'src/model/DependencyTreeNode'
+import { type ForbiddenDependencyRule } from 'src/model/ForbiddenDependencyRule'
+import { type Violation } from 'src/model/Violation'
 
 export interface RuleViolationService {
-    findViolations: (dependencyTree: DependencyTreeNode, rules: ForbiddenDependencyRule[]) => Violation[]
+  findViolations: (dependencyTree: DependencyTreeNode, rules: ForbiddenDependencyRule[]) => Violation[]
 }

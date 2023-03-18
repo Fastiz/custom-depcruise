@@ -1,3 +1,3 @@
-export type SourceFile = {
-    path: string
+export interface SourceFile {
+  path: string
 }

@@ -1,61 +1,60 @@
-import {Logger} from "src/logger/Logger";
-import {SourceFile} from "src/model/File";
-import {ImportDependency} from "src/model/ImportDependency";
-import {FileRepository} from 'src/repository/FileRepository';
-import fs from "fs";
-import readline from "readline";
-import {findFirstOf, findLastOf} from "src/util/findSearchString";
+import { type Logger } from 'src/logger/Logger'
+import { type SourceFile } from 'src/model/File'
+import { type ImportDependency } from 'src/model/ImportDependency'
+import { type FileRepository } from 'src/repository/FileRepository'
+import fs from 'fs'
+import readline from 'readline'
+import { findFirstOf, findLastOf } from 'src/util/findSearchString'
 
 export class FileRepositoryImpl implements FileRepository {
-    readonly logger: Logger
+  readonly logger: Logger
 
-    constructor(logger: Logger) {
-        this.logger = logger
+  constructor (logger: Logger) {
+    this.logger = logger
+  }
+
+  readImportsFromSourceFile = async (sourceFile: SourceFile): Promise<ImportDependency[]> => {
+    const importStrings = await this.readImportStrings(sourceFile.path)
+
+    const importStringToImportDependency = (to: string) => {
+      const targetFile = { path: to }
+      return {
+        from: sourceFile,
+        to: targetFile
+      }
     }
 
-    readImportsFromSourceFile = async (sourceFile: SourceFile): Promise<ImportDependency[]> => {
-        const importStrings = await this.readImportStrings(sourceFile.path)
+    return importStrings.map(importStringToImportDependency)
+  }
 
-        const importStringToImportDependency = (to: string) => {
-            const targetFile = {path: to}
-            return {
-                from: sourceFile,
-                to: targetFile
-            }
-        }
+  readImportStrings = async (filePath: string): Promise<string[]> => {
+    const fileStream = fs.createReadStream(filePath)
 
-        return importStrings.map(importStringToImportDependency)
+    const rl = readline.createInterface({
+      input: fileStream,
+      crlfDelay: Infinity
+    })
+
+    const imports: string[] = []
+
+    for await (const line of rl) {
+      if (!line.startsWith('import')) {
+        continue
+      }
+
+      const start = findFirstOf(line, ['\'', '"', '`'])
+      const end = findLastOf(line, ['\'', '"', '`'])
+
+      if (start == null || end == null) {
+        this.logger.warn(`Line that starts with 'import' has an invalid format: ${line}`)
+        continue
+      }
+
+      const i = line.substring(start + 1, end)
+
+      imports.push(i)
     }
 
-    readImportStrings = async (filePath: string): Promise<string[]> => {
-        const fileStream = fs.createReadStream(filePath)
-
-        const rl = readline.createInterface({
-            input: fileStream,
-            crlfDelay: Infinity
-        })
-
-        const imports: string[] = []
-
-        for await (const line of rl) {
-            if(!line.startsWith('import')){
-                continue
-            }
-
-            const start = findFirstOf(line, ['\'', '"', '`'])
-            const end = findLastOf(line, ['\'', '"', '`'])
-
-            if(start == null || end == null){
-                this.logger.warn(`Line that starts with 'import' has an invalid format: ${line}`)
-                continue
-            }
-
-            const i = line.substring(start + 1, end)
-
-            imports.push(i)
-        }
-
-        return imports
-    }
+    return imports
+  }
 }
-

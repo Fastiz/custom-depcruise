@@ -1,6 +1,6 @@
-import {SourceFile} from "src/model/File";
+import { type SourceFile } from 'src/model/File'
 
-export type ImportDependency = {
-    from: SourceFile
-    to: SourceFile
+export interface ImportDependency {
+  from: SourceFile
+  to: SourceFile
 }
