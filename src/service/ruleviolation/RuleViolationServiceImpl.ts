@@ -66,7 +66,7 @@ export class RuleViolationServiceImpl implements RuleViolationService {
 
   filterUniqueViolations = (violations: Violation[]): Violation[] => {
     const extractKey = (violation: Violation): string => {
-      return `${violation.rule.name}:${violation.importDependency.from}:${violation.importDependency.to}`
+      return `${violation.rule.name}:${violation.importDependency.from.path}:${violation.importDependency.to.path}`
     }
 
     const found = new Set<string>()
