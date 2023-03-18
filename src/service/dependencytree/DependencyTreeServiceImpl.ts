@@ -7,17 +7,17 @@ import { ImportDependency } from '../../model/ImportDependency'
 import path from 'path'
 
 export class DependencyTreeServiceImpl implements DependencyTreeService {
-  readonly workingDirectory: string
+  readonly rootDirectory: string
   readonly fileRepository: FileRepository
 
-  constructor (workingDirectory: string, fileRepository: FileRepository) {
-    this.workingDirectory = workingDirectory
+  constructor (rootDirectory: string, fileRepository: FileRepository) {
+    this.rootDirectory = rootDirectory
     this.fileRepository = fileRepository
   }
 
   buildDependencyTreeFromFilePath = async (rootPath: string): Promise<DependencyTreeNode> => {
-    const absolutePath = this.resolvePath(this.workingDirectory, rootPath)
-    const sourceFile: SourceFile = { path: absolutePath }
+    const pathFromRoot = this.resolveRelativePathFromRoot(this.rootDirectory, rootPath)
+    const sourceFile: SourceFile = { path: pathFromRoot }
     const cachedNodes = new Map<string, DependencyTreeNode>()
     return await this.buildDependencyTreeFromRootPathRec(sourceFile, cachedNodes)
   }
@@ -28,16 +28,16 @@ export class DependencyTreeServiceImpl implements DependencyTreeService {
     const currentDirectory = path.dirname(sourceFile.path)
 
     const getDependencyNode = async ({ to }: ImportDependency) => {
-      const fullPath = this.resolvePath(currentDirectory, to.path)
+      const pathFromRoot = this.resolveRelativePathFromRoot(currentDirectory, to.path)
 
-      const cachedNode = cachedNodes.get(fullPath)
+      const cachedNode = cachedNodes.get(pathFromRoot)
 
       if (notUndefined(cachedNode)) {
         return cachedNode
       }
 
-      const newNode = await this.buildDependencyTreeFromRootPathRec({ path: fullPath }, cachedNodes)
-      cachedNodes.set(fullPath, newNode)
+      const newNode = await this.buildDependencyTreeFromRootPathRec({ path: pathFromRoot }, cachedNodes)
+      cachedNodes.set(pathFromRoot, newNode)
 
       return newNode
     }
@@ -50,11 +50,15 @@ export class DependencyTreeServiceImpl implements DependencyTreeService {
     }
   }
 
-  resolvePath = (from: string, to: string): string => {
+  resolveRelativePathFromRoot = (from: string, to: string): string => {
+    let absolutePath: string
+
     if (to.startsWith('.')) {
-      return path.resolve(from, to)
+      absolutePath = path.resolve(from, to)
+    } else {
+      absolutePath = path.resolve(this.rootDirectory, to)
     }
 
-    return path.resolve(this.workingDirectory, to)
+    return path.relative(this.rootDirectory, absolutePath)
   }
 }
