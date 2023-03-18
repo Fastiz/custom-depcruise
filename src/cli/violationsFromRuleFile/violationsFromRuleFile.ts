@@ -3,17 +3,16 @@ import { getDependencyTreeService } from 'src/service/dependencytree/DependencyT
 import { getRuleViolationService } from 'src/service/ruleviolation/RuleViolationServiceProvider'
 import { notUndefined } from 'src/util/notUndefined'
 import { ForbiddenDependencyRule } from 'src/model/ForbiddenDependencyRule'
-import { getFileRepository } from 'src/repository/FileRepositoryProvider'
-import { isLiteralObject } from 'src/util/isLiteralObject'
-import { notNull } from 'src/util/notNull'
+import { getFileRepository } from '../../repository/FileRepositoryProvider'
+import { notNull } from '../../util/notNull'
+import { parseRules } from './mapper/ruleFileParser'
 
 type Params = {
   rootFile: string
   rules: ForbiddenDependencyRule[]
 }
 
-const testRuleViolation = async (params: Params) => {
-
+const violationsFromRuleFile = async (params: Params) => {
   const {
     rootFile,
     rules
@@ -31,53 +30,6 @@ const testRuleViolation = async (params: Params) => {
   violations.forEach(violation => {
     console.log(violation)
   })
-}
-
-const parseRule = (readRule: unknown): ForbiddenDependencyRule | null => {
-  if (!isLiteralObject(readRule)) {
-    return null
-  }
-
-  if (!('name' in readRule) || !(typeof readRule.name === 'string')) {
-    return null
-  }
-
-  if (!('fromPattern' in readRule) || !(typeof readRule.fromPattern === 'string')) {
-    return null
-  }
-
-  if (!('toPattern' in readRule) || !(typeof readRule.toPattern === 'string')) {
-    return null
-  }
-
-  const {
-    name,
-    fromPattern,
-    toPattern
-  } = readRule
-
-  return {
-    name,
-    fromPattern,
-    toPattern
-  }
-}
-
-const parseRules = (readRules: unknown): (ForbiddenDependencyRule | null)[] | null => {
-  if (!isLiteralObject(readRules)) {
-    return null
-  }
-
-  if (!('rules' in readRules)) {
-    return null
-  }
-
-  if (!Array.isArray(readRules.rules)) {
-    return null
-  }
-
-  return readRules.rules
-    .map(parseRule)
 }
 
 const readRulesFromFile = async (rulesFilePath: string): Promise<ForbiddenDependencyRule[]> => {
@@ -130,7 +82,7 @@ export const ruleViolationsCli = async (args: string[]) => {
 
   const rules = await readRulesFromFile(rulesFilePath)
 
-  await testRuleViolation({
+  await violationsFromRuleFile({
     rootFile,
     rules
   })
