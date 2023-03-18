@@ -2,7 +2,7 @@ import { getFileRepository } from 'src/repository/FileRepositoryProvider'
 import { type DependencyTreeService } from 'src/service/dependencytree/DependencyTreeService'
 import { DependencyTreeServiceImpl } from 'src/service/dependencytree/DependencyTreeServiceImpl'
 
-export const getDependencyTreeService = (): DependencyTreeService => {
+export const getDependencyTreeService = (workingDirectory: string): DependencyTreeService => {
   const fileRepository = getFileRepository()
-  return new DependencyTreeServiceImpl(fileRepository)
+  return new DependencyTreeServiceImpl(workingDirectory, fileRepository)
 }

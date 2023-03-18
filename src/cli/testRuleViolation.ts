@@ -19,7 +19,9 @@ const testRuleViolation = async (params: Params) => {
     rules
   } = params
 
-  const dependencyTreeService = getDependencyTreeService()
+  const workingDirectory = process.cwd()
+
+  const dependencyTreeService = getDependencyTreeService(workingDirectory)
   const ruleViolationService = getRuleViolationService()
 
   const tree = await dependencyTreeService.buildDependencyTreeFromFilePath(rootFile)
