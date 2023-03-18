@@ -34,7 +34,7 @@ export class FileRepositoryImpl implements FileRepository {
   }
 
   readImportsFromSourceFile = async (sourceFile: SourceFile): Promise<ImportDependency[]> => {
-    const importStrings = await this.readImportStrings(`./${sourceFile.path}.ts`)
+    const importStrings = await this.readImportStrings(`${sourceFile.path}.ts`)
 
     if (importStrings == null) {
       return []

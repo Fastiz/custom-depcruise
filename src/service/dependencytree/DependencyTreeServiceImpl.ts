@@ -4,6 +4,7 @@ import { type FileRepository } from 'src/repository/FileRepository'
 import { type DependencyTreeService } from 'src/service/dependencytree/DependencyTreeService'
 import { notUndefined } from '../../util/notUndefined'
 import { ImportDependency } from '../../model/ImportDependency'
+import path from 'path'
 
 export class DependencyTreeServiceImpl implements DependencyTreeService {
   readonly fileRepository: FileRepository
@@ -13,7 +14,8 @@ export class DependencyTreeServiceImpl implements DependencyTreeService {
   }
 
   buildDependencyTreeFromFilePath = async (rootPath: string): Promise<DependencyTreeNode> => {
-    const sourceFile: SourceFile = { path: rootPath }
+    const absolutePath = path.resolve(rootPath)
+    const sourceFile: SourceFile = { path: absolutePath }
     const cachedNodes = new Map<string, DependencyTreeNode>()
     return await this.buildDependencyTreeFromRootPathRec(sourceFile, cachedNodes)
   }
@@ -22,14 +24,16 @@ export class DependencyTreeServiceImpl implements DependencyTreeService {
     const imports = await this.fileRepository.readImportsFromSourceFile(sourceFile) ?? null
 
     const getDependencyNode = async ({ to }: ImportDependency) => {
-      const cachedNode = cachedNodes.get(to.path)
+      const fullPath = path.resolve(to.path)
+
+      const cachedNode = cachedNodes.get(fullPath)
 
       if (notUndefined(cachedNode)) {
         return cachedNode
       }
 
       const newNode = await this.buildDependencyTreeFromRootPathRec(to, cachedNodes)
-      cachedNodes.set(to.path, newNode)
+      cachedNodes.set(fullPath, newNode)
 
       return newNode
     }
