@@ -1,8 +1,7 @@
-import { getLogger } from 'src/logger/LoggerProvider'
 import { type FileRepository } from 'src/repository/FileRepository'
 import { FileRepositoryImpl } from 'src/repository/FileRepositoryImpl'
+import { Logger } from '../logger/Logger'
 
-export const getFileRepository = (): FileRepository => {
-  const logger = getLogger()
+export const getFileRepository = (logger: Logger): FileRepository => {
   return new FileRepositoryImpl(logger)
 }
