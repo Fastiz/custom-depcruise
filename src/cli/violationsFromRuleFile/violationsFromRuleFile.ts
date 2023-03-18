@@ -1,8 +1,11 @@
+import { getLogger } from 'src/logger/LoggerProvider'
+import { getDependencyTreeService } from 'src/service/dependencytree/DependencyTreeServiceProvider'
+import { getRuleViolationService } from 'src/service/ruleviolation/RuleViolationServiceProvider'
 import { notUndefined } from 'src/util/notUndefined'
 import { ForbiddenDependencyRule } from 'src/model/ForbiddenDependencyRule'
+import { getFileRepository } from '../../repository/FileRepositoryProvider'
 import { notNull } from '../../util/notNull'
 import { parseRules } from './mapper/ruleFileParser'
-import { iocContainer } from '../../configuration/iocContainer'
 
 type Params = {
   rootFile: string
@@ -15,8 +18,10 @@ const violationsFromRuleFile = async (params: Params) => {
     rules
   } = params
 
-  const dependencyTreeService = iocContainer.get().dependencyTreeService
-  const ruleViolationService = iocContainer.get().ruleViolationService
+  const rootDirectory = process.cwd()
+
+  const dependencyTreeService = getDependencyTreeService(rootDirectory)
+  const ruleViolationService = getRuleViolationService()
 
   const tree = await dependencyTreeService.buildDependencyTreeFromFilePath(rootFile)
 
@@ -28,8 +33,8 @@ const violationsFromRuleFile = async (params: Params) => {
 }
 
 const readRulesFromFile = async (rulesFilePath: string): Promise<ForbiddenDependencyRule[]> => {
-  const logger = iocContainer.get().logger
-  const fileRepository = iocContainer.get().fileRepository
+  const logger = getLogger()
+  const fileRepository = getFileRepository()
 
   const allLines: string[] = []
 
@@ -66,9 +71,7 @@ const readRulesFromFile = async (rulesFilePath: string): Promise<ForbiddenDepend
 }
 
 export const ruleViolationsCli = async (args: string[]) => {
-  iocContainer.initialize({})
-
-  const logger = iocContainer.get().logger
+  const logger = getLogger()
 
   const [rootFile, rulesFilePath] = args
 
