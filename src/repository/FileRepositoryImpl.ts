@@ -5,12 +5,32 @@ import { type FileRepository } from 'src/repository/FileRepository'
 import fs from 'fs'
 import readline from 'readline'
 import { findFirstOf, findLastOf } from 'src/util/findSearchString'
+import { Observer } from '../util/observer'
 
 export class FileRepositoryImpl implements FileRepository {
   readonly logger: Logger
 
   constructor (logger: Logger) {
     this.logger = logger
+  }
+
+  readLinesFromFile = async (filePath: string, lineObserver: Observer<string>) => {
+    const fileStream = fs.createReadStream(filePath)
+
+    const rl = readline.createInterface({
+      input: fileStream,
+      crlfDelay: Infinity
+    })
+
+    try {
+      for await (const line of rl) {
+        lineObserver.next(line)
+      }
+    } catch (e) {
+      const errorMessage = `An error occurred when reading file: ${filePath}`
+      this.logger.error(errorMessage)
+      throw Error(errorMessage)
+    }
   }
 
   readImportsFromSourceFile = async (sourceFile: SourceFile): Promise<ImportDependency[]> => {
@@ -32,35 +52,30 @@ export class FileRepositoryImpl implements FileRepository {
   }
 
   readImportStrings = async (filePath: string): Promise<string[] | null> => {
-    const fileStream = fs.createReadStream(filePath)
-
-    const rl = readline.createInterface({
-      input: fileStream,
-      crlfDelay: Infinity
-    })
-
     const imports: string[] = []
 
-    try {
-      for await (const line of rl) {
-        if (!line.startsWith('import')) {
-          continue
-        }
-
-        const start = findFirstOf(line, ['\'', '"', '`'])
-        const end = findLastOf(line, ['\'', '"', '`'])
-
-        if (start == null || end == null) {
-          this.logger.warn(`Line that starts with 'import' has an invalid format: ${line}`)
-          continue
-        }
-
-        const i = line.substring(start + 1, end)
-
-        imports.push(i)
+    const readLine = (line: string) => {
+      if (!line.startsWith('import')) {
+        return
       }
+
+      const start = findFirstOf(line, ['\'', '"', '`'])
+      const end = findLastOf(line, ['\'', '"', '`'])
+
+      if (start == null || end == null) {
+        this.logger.warn(`Line that starts with 'import' has an invalid format: ${line}`)
+        return
+      }
+
+      const i = line.substring(start + 1, end)
+
+      imports.push(i)
+    }
+
+    try {
+      await this.readLinesFromFile(filePath, { next: readLine })
     } catch (e) {
-      this.logger.error(`Could not read file path: ${filePath}`)
+      this.logger.error(`Skipping file with path: ${filePath}`)
       return null
     }
 
