@@ -14,7 +14,11 @@ export class FileRepositoryImpl implements FileRepository {
   }
 
   readImportsFromSourceFile = async (sourceFile: SourceFile): Promise<ImportDependency[]> => {
-    const importStrings = await this.readImportStrings(sourceFile.path)
+    const importStrings = await this.readImportStrings(`./${sourceFile.path}.ts`)
+
+    if (importStrings == null) {
+      return []
+    }
 
     const importStringToImportDependency = (to: string) => {
       const targetFile = { path: to }
@@ -27,7 +31,7 @@ export class FileRepositoryImpl implements FileRepository {
     return importStrings.map(importStringToImportDependency)
   }
 
-  readImportStrings = async (filePath: string): Promise<string[]> => {
+  readImportStrings = async (filePath: string): Promise<string[] | null> => {
     const fileStream = fs.createReadStream(filePath)
 
     const rl = readline.createInterface({
@@ -37,22 +41,27 @@ export class FileRepositoryImpl implements FileRepository {
 
     const imports: string[] = []
 
-    for await (const line of rl) {
-      if (!line.startsWith('import')) {
-        continue
+    try {
+      for await (const line of rl) {
+        if (!line.startsWith('import')) {
+          continue
+        }
+
+        const start = findFirstOf(line, ['\'', '"', '`'])
+        const end = findLastOf(line, ['\'', '"', '`'])
+
+        if (start == null || end == null) {
+          this.logger.warn(`Line that starts with 'import' has an invalid format: ${line}`)
+          continue
+        }
+
+        const i = line.substring(start + 1, end)
+
+        imports.push(i)
       }
-
-      const start = findFirstOf(line, ['\'', '"', '`'])
-      const end = findLastOf(line, ['\'', '"', '`'])
-
-      if (start == null || end == null) {
-        this.logger.warn(`Line that starts with 'import' has an invalid format: ${line}`)
-        continue
-      }
-
-      const i = line.substring(start + 1, end)
-
-      imports.push(i)
+    } catch (e) {
+      this.logger.error(`Could not read file path: ${filePath}`)
+      return null
     }
 
     return imports

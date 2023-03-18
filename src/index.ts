@@ -1,3 +1,3 @@
-import { testRuleViolation } from './cli/testRuleViolation'
+import { testRuleViolation } from 'src/cli/testRuleViolation'
 
-testRuleViolation(['./src/index.ts', 'FileRepositoryProvider', 'FileRepositoryImpl'])
+testRuleViolation(['src/index', 'FileRepositoryProvider', 'FileRepositoryImpl'])

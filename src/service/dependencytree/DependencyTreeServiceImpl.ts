@@ -16,7 +16,7 @@ export class DependencyTreeServiceImpl implements DependencyTreeService {
   }
 
   buildDependencyTreeFromRootPathRec = async (sourceFile: SourceFile): Promise<DependencyTreeNode> => {
-    const imports = await this.fileRepository.readImportsFromSourceFile(sourceFile)
+    const imports = await this.fileRepository.readImportsFromSourceFile(sourceFile) ?? null
     const dependencies = await Promise.all(imports
       .map(async ({ to }) => await this.buildDependencyTreeFromRootPathRec(to)))
 
