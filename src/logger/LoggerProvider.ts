@@ -1,6 +1,6 @@
 import { type Logger } from 'src/logger/Logger'
-import { LoggerImpl } from 'src/logger/LoggerImpl'
+import { NoOperationLogger } from './NoOperationLogger'
 
 export const getLogger = (): Logger => {
-  return new LoggerImpl()
+  return new NoOperationLogger()
 }
