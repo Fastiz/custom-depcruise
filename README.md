@@ -44,7 +44,7 @@ Where:
 The program will print into the standard output the content of a .dot file. This .dot file can be converted into an image using [graphviz](https://www.graphviz.org/doc/info/command.html).
 
 #### Example graph
-
+![dependency-graph](https://user-images.githubusercontent.com/12635493/227739484-a51b3115-5560-4faa-b4d0-7fb906f7b7bd.png)
 
 ## Drawbacks
 - This is a very naive implementation and it is not optimized at all
