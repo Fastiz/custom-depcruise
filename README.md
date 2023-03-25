@@ -1,8 +1,15 @@
 # Dependency cruiser
 ## About
-Just playing around building a simple dependency cruiser that reads rules from a file. Those rules represent imports that are forbidden.
-## Configure rules
-Create a `rules-config.json` file in the root directory.
+Just playing around building a simple dependency cruiser.
+
+Features:
+- Find import violations specified from a configuration file
+- Create a graph of dependencies in .dot format
+
+## How to run
+### Import violations
+#### Configure rules
+Those rules represent imports that are forbidden. For configuring them create a `rules-config.json` file in the root directory.
 The file schema should be like the following:
 ````
 {
@@ -16,11 +23,29 @@ The file schema should be like the following:
     ]
 }
 ````
-## Run
+#### Run
 For running the program just do:
 - `yarn install`
-- `yarn start`
-The program will run in the same directory against the source code of this project. But it should be easy to support running in a different directory by modifying the file `/src/cli/violationsFromRuleFile/violationsFromRuleFile.ts`.
+- `yarn run violationsFromRuleFile -- {{rootFile}} {{rulesFilePath}}`
+
+Where:
+- {{rootFile}} is the path of the source file to start cruising from. The .ts extension should be excluded.
+- {{rulesFilePath}} is the path of the file that defines the rules
+
+### Dependency graph
+#### Run
+For running the program just do:
+- `yarn install`
+- `yarn run exportDependencyGraph -- {{rootFile}}`
+
+Where:
+- {{rootFile}} is the path of the source file to start cruising from. The .ts extension should be excluded.
+
+The program will print into the standard output the content of a .dot file. This .dot file can be converted into an image using [graphviz](https://www.graphviz.org/doc/info/command.html).
+
+#### Example graph
+
+
 ## Drawbacks
 - This is a very naive implementation and it is not optimized at all
 - Only works with files that have a `.ts` extension
