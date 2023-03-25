@@ -6,14 +6,7 @@ import { getGraphTraversalService } from '../../service/graphtraversal/GraphTrav
 import { getDotFileBuilder } from './dotFileBuilder/DotFileBuilderProvider'
 
 const extractNodeName = (node: DependencyTreeNode): string => {
-  const path = node.nodeFile.path
-  const lastIndexOfSlash = path.lastIndexOf('/')
-
-  if(lastIndexOfSlash === -1){
-    return path
-  }
-
-  return path.slice(lastIndexOfSlash + 1)
+  return node.nodeFile.path
 }
 
 export const exportDependencyGraphCli = async (args: string[]) => {
