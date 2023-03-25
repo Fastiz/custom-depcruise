@@ -40,3 +40,10 @@ export const exportDependencyGraphCli = async (args: string[]) => {
 
   console.log(dotFileBuilder.buildContentString())
 }
+
+const run = async (): Promise<void> => {
+  const args = process.argv.slice(2)
+  await exportDependencyGraphCli(args)
+}
+
+run()

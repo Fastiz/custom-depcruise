@@ -87,3 +87,10 @@ export const ruleViolationsCli = async (args: string[]) => {
     rules
   })
 }
+
+const run = async (): Promise<void> => {
+  const args = process.argv.slice(2)
+  await ruleViolationsCli(args)
+}
+
+run()

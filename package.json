@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "NODE_PATH=. ts-node ./src/index.ts",
+    "violationsFromRuleFile": "NODE_PATH=. ts-node ./src/cli/violationsFromRuleFile/violationsFromRuleFile.ts",
+    "exportDependencyGraph": "NODE_PATH=. ts-node ./src/cli/exportDependencyGraph/exportDependencyGraph.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint-fix": "npx eslint src --fix"
   },
