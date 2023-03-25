@@ -15,7 +15,7 @@ The file schema should be like the following:
 {
     "rules": [
         {
-            "name": "Dependencies should be instantiated only from the iocContainer",
+            "name": "{{Unique name for the rule}}",
             "fromPattern": "{{regex that matches the dependent module}}",
             "toPattern": "{{regex that matches the dependency module}}"
         },
