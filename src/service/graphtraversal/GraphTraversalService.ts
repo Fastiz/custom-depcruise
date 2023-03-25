@@ -3,4 +3,5 @@ import { Observer } from '../../util/observer'
 
 export interface GraphTraversalService {
   traverseGraph: (root: DependencyTreeNode, nodeObserver: Observer<DependencyTreeNode>) => void
+  findCycle: (root: DependencyTreeNode) => DependencyTreeNode[] | null
 }
