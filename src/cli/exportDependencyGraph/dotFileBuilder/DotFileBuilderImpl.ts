@@ -2,7 +2,7 @@ import { DotFileBuilder } from './DotFileBuilder'
 import { notUndefined } from '../../../util/notUndefined'
 import { changeOfBase } from '../../../util/changeOfBase'
 
-type Dependency = { from: string, to: string }
+type Dependency = { fromLabel: string, toLabel: string }
 
 const indexToNodeName = (index: number): string => {
   const baseAlphabet = 'abcdefghijklmnopqrstuvwxyz'
@@ -12,30 +12,30 @@ const indexToNodeName = (index: number): string => {
 export class DotFileBuilderImpl implements DotFileBuilder {
   readonly dependencies: Dependency[] = []
 
-  addDependency = (from: string, to: string): void => {
+  addDependency = (fromLabel: string, toLabel: string): void => {
     this.dependencies.push({
-      from,
-      to
+      fromLabel,
+      toLabel
     })
   }
 
   buildContentString = (): string => {
-    const pathToName = this.buildPathToNamesMap()
+    const labelToName = this.buildLabelToNamesMap()
 
     let content = ''
     content += this.appendFileBeginning()
-    content += this.appendNodeLines(pathToName)
-    content += this.appendEdgeLines(pathToName)
+    content += this.appendNodeLines(labelToName)
+    content += this.appendEdgeLines(labelToName)
     content += this.appendFileEnding()
     return content
   }
 
-  buildPathToNamesMap = (): Map<string, string> => {
+  buildLabelToNamesMap = (): Map<string, string> => {
     const uniqueNodes = [...new Set<string>(
       this.dependencies.flatMap(({
-        from,
-        to
-      }) => [from, to])
+        fromLabel,
+        toLabel
+      }) => [fromLabel, toLabel])
     )]
 
     const result = new Map<string, string>()
@@ -51,23 +51,23 @@ export class DotFileBuilderImpl implements DotFileBuilder {
     return 'digraph Dependencies {\n'
   }
 
-  appendNodeLines = (pathToName: Map<string, string>): string => {
-    const nodes = [...pathToName.entries()]
+  appendNodeLines = (labelToName: Map<string, string>): string => {
+    const nodes = [...labelToName.entries()]
 
     let content = ''
-    nodes.forEach(([path, name]) => {
-      content += `${name} [label = "${path}"];\n`
+    nodes.forEach(([label, name]) => {
+      content += `${name} [label = "${label}"];\n`
     })
 
     return content
   }
 
-  appendEdgeLines = (pathToName: Map<string, string>): string => {
+  appendEdgeLines = (labelToName: Map<string, string>): string => {
     let content = ''
 
     this.dependencies.forEach(dep => {
-      const fromName = pathToName.get(dep.from)
-      const toName = pathToName.get(dep.to)
+      const fromName = labelToName.get(dep.fromLabel)
+      const toName = labelToName.get(dep.toLabel)
 
       if (!notUndefined(fromName) || !notUndefined(toName)) {
         throw Error('Invalid state exception')
