@@ -1,5 +1,5 @@
 import { FilterDependencies } from './FilterDependencies'
-import { DependencyTreeNode } from '../../../model/DependencyTreeNode'
+import { DependencyTreeNode } from '../../../model/dependencyTreeNode/DependencyTreeNode'
 
 export class FilterDependenciesImpl implements FilterDependencies {
   filter = (nodes: DependencyTreeNode[]): DependencyTreeNode[] => {

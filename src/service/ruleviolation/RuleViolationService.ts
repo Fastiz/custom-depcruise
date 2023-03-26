@@ -1,4 +1,4 @@
-import { type DependencyTreeNode } from 'src/model/DependencyTreeNode'
+import { type DependencyTreeNode } from 'src/model/dependencyTreeNode/DependencyTreeNode'
 import { type ForbiddenDependencyRule } from 'src/model/ForbiddenDependencyRule'
 import { type Violation } from 'src/model/Violation'
 

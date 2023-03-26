@@ -1,9 +1,11 @@
 import { getLogger } from '../../logger/LoggerProvider'
 import { notUndefined } from '../../util/notUndefined'
 import { getDependencyTreeService } from '../../service/dependencytree/DependencyTreeServiceProvider'
-import { DependencyTreeNode } from '../../model/DependencyTreeNode'
+import { DependencyTreeNode } from '../../model/dependencyTreeNode/DependencyTreeNode'
 import { getGraphTraversalService } from '../../service/graphtraversal/GraphTraversalServiceProvider'
 import { getDotFileBuilder } from './dotFileBuilder/DotFileBuilderProvider'
+import { NodeAdapter } from '../../util/nodeadapter/NodeAdapter'
+import { Node } from 'src/model/graph/Node'
 
 const extractNodeName = (node: DependencyTreeNode): string => {
   return node.nodeFile.path
@@ -27,16 +29,26 @@ export const exportDependencyGraphCli = async (args: string[]) => {
 
   const tree = await dependencyTreeService.buildDependencyTreeFromFilePath(rootFile)
 
-  const readNode = (node: DependencyTreeNode): void => {
-    const from = extractNodeName(node)
+  const readNode = (node: Node<DependencyTreeNode>): void => {
+    const from = extractNodeName(node.getData())
 
-    node.dependencies.forEach((dep) => {
-      const to = extractNodeName(dep)
+    node.getChildren().forEach((dep) => {
+      const to = extractNodeName(dep.getData())
       dotFileBuilder.addDependency(from, to)
     })
   }
 
-  graphTraversalService.traverseGraph(tree, { next: readNode })
+  const treeNode = new NodeAdapter(
+    tree,
+    (node) => node.dependencies,
+    (node) => node
+  )
+
+  graphTraversalService.traverseGraph(
+    treeNode,
+    { next: readNode },
+    (node) => node.getData().nodeFile.path
+  )
 
   console.log(dotFileBuilder.buildContentString())
 }

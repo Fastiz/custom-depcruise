@@ -1,4 +1,4 @@
-import { type DependencyTreeNode } from 'src/model/DependencyTreeNode'
+import { type DependencyTreeNode } from 'src/model/dependencyTreeNode/DependencyTreeNode'
 import { type SourceFile } from 'src/model/File'
 import { type FileRepository } from 'src/repository/FileRepository'
 import { type DependencyTreeService } from 'src/service/dependencytree/DependencyTreeService'
