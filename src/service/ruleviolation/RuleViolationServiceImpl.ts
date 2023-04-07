@@ -1,4 +1,3 @@
-import { type DependencyTreeNode } from 'src/model/dependencyTreeNode/DependencyTreeNode'
 import { type ForbiddenDependencyRule } from 'src/model/ForbiddenDependencyRule'
 import { type ImportDependency } from 'src/model/ImportDependency'
 import { type Violation } from 'src/model/Violation'
@@ -8,7 +7,7 @@ import { SourceFile } from '../../model/File'
 import { Node } from '../../model/graph/Node'
 
 export class RuleViolationServiceImpl implements RuleViolationService {
-  findViolationsV2 = (graph: Node<SourceFile>, rules: ForbiddenDependencyRule[]): Violation[] => {
+  findViolations = (graph: Node<SourceFile>, rules: ForbiddenDependencyRule[]): Violation[] => {
     return this.findViolationsRecV2(graph, rules)
   }
 
@@ -28,36 +27,6 @@ export class RuleViolationServiceImpl implements RuleViolationService {
 
     const childrenViolations = dependencyTree.getChildren().flatMap((dependency) => {
       return this.findViolationsRecV2(dependency, rules)
-    })
-
-    const allViolations = [
-      ...nodeViolations,
-      ...childrenViolations
-    ]
-
-    return this.filterUniqueViolations(allViolations)
-  }
-
-  findViolations = (dependencyTree: DependencyTreeNode, rules: ForbiddenDependencyRule[]): Violation[] => {
-    return this.findViolationsRec(dependencyTree, rules)
-  }
-
-  findViolationsRec = (dependencyTree: DependencyTreeNode, rules: ForbiddenDependencyRule[]): Violation[] => {
-    if (dependencyTree.dependencies.length === 0) {
-      return []
-    }
-
-    const nodeViolations = dependencyTree.dependencies.flatMap((dependency) => {
-      const importDependency = {
-        from: dependencyTree.nodeFile,
-        to: dependency.nodeFile
-      }
-
-      return this.applyRules(importDependency, rules)
-    })
-
-    const childrenViolations = dependencyTree.dependencies.flatMap((dependency) => {
-      return this.findViolationsRec(dependency, rules)
     })
 
     const allViolations = [

@@ -26,7 +26,7 @@ export const exportDependencyGraphCli = async (args: string[]) => {
   const graphTraversalService = getGraphTraversalService()
   const dotFileBuilder = getDotFileBuilder()
 
-  const graphAsync = dependencyTreeService.buildDependencyTreeFromFilePathV2(rootFile)
+  const graphAsync = dependencyTreeService.buildDependencyTreeFromFilePath(rootFile)
   const graph = await graphTraversalService.mapGraphAsyncToGraph(graphAsync, node => node.path)
 
   const readNode = (node: Node<SourceFile>): void => {

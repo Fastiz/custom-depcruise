@@ -14,7 +14,7 @@ export class DependencyTreeServiceImpl implements DependencyTreeService {
     this.fileRepository = fileRepository
   }
 
-  buildDependencyTreeFromFilePathV2 = (rootPath: string): NodeAsync<SourceFile> => {
+  buildDependencyTreeFromFilePath = (rootPath: string): NodeAsync<SourceFile> => {
     const pathFromRoot = this.resolveRelativePathFromRoot(this.rootDirectory, rootPath)
     const sourceFile: SourceFile = { path: pathFromRoot }
     return new NodeAsyncAdapter(

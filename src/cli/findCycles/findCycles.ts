@@ -28,7 +28,7 @@ const findCycles = async (args: string[]): Promise<void> => {
   const filterDependencies = getFilterDependencies()
   const dotFileBuilder = getDotFileBuilder()
 
-  const dependencyGraphAsync = dependencyTreeService.buildDependencyTreeFromFilePathV2(rootFile)
+  const dependencyGraphAsync = dependencyTreeService.buildDependencyTreeFromFilePath(rootFile)
   const dependencyGraph = await graphTraversalService.mapGraphAsyncToGraph(
     dependencyGraphAsync,
     sourceFile => sourceFile.path

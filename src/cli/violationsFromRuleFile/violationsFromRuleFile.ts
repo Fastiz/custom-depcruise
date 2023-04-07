@@ -25,10 +25,10 @@ const violationsFromRuleFile = async (params: Params) => {
   const ruleViolationService = getRuleViolationService()
   const graphTraversalService = getGraphTraversalService()
 
-  const graphAsync = dependencyTreeService.buildDependencyTreeFromFilePathV2(rootFile)
+  const graphAsync = dependencyTreeService.buildDependencyTreeFromFilePath(rootFile)
   const graph = await graphTraversalService.mapGraphAsyncToGraph(graphAsync, node => node.path)
 
-  const violations = ruleViolationService.findViolationsV2(graph, rules)
+  const violations = ruleViolationService.findViolations(graph, rules)
 
   violations.forEach(violation => {
     console.log(violation)
