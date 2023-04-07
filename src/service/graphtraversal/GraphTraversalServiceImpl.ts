@@ -1,5 +1,4 @@
 import { GraphTraversalService } from './GraphTraversalService'
-import { DependencyTreeNode } from '../../model/dependencyTreeNode/DependencyTreeNode'
 import { Observer } from '../../util/observer'
 import { Node } from '../../model/graph/Node'
 import { GraphMapper } from './GraphMapper'
@@ -38,10 +37,10 @@ export class GraphTraversalServiceImpl implements GraphTraversalService {
   findCycle = <NodeData> (root: Node<NodeData>, keyExtractor: (input: NodeData) => string): Node<NodeData>[] | null => {
     const visitedNodes = new Set<string>()
     const recStack: Node<NodeData>[] = []
-    return this.findCycleV2Rec(root, visitedNodes, recStack, keyExtractor)
+    return this.findCycleRec(root, visitedNodes, recStack, keyExtractor)
   }
 
-  findCycleV2Rec = <NodeData> (current: Node<NodeData>, visitedNodes: Set<string>, recStack: Node<NodeData>[], keyExtractor: (input: NodeData) => string): Node<NodeData>[] | null => {
+  findCycleRec = <NodeData> (current: Node<NodeData>, visitedNodes: Set<string>, recStack: Node<NodeData>[], keyExtractor: (input: NodeData) => string): Node<NodeData>[] | null => {
     const currentNodeKey = keyExtractor(current.getData())
 
     visitedNodes.add(currentNodeKey)
@@ -61,7 +60,7 @@ export class GraphTraversalServiceImpl implements GraphTraversalService {
         return newRectStack.slice(visitedNodeInRecStackIndex)
       }
 
-      const foundCycleDown = this.findCycleV2Rec(dep, visitedNodes, newRectStack, keyExtractor)
+      const foundCycleDown = this.findCycleRec(dep, visitedNodes, newRectStack, keyExtractor)
       if (foundCycleDown !== null) {
         return foundCycleDown
       }
@@ -85,9 +84,5 @@ export class GraphTraversalServiceImpl implements GraphTraversalService {
   ): Promise<Node<NodeData>> => {
     const graphAsyncToGraphMapper = new GraphAsyncToGraphMapper(graph, keyExtractor)
     return await graphAsyncToGraphMapper.get()
-  }
-
-  extractKeyFromNode = (node: DependencyTreeNode): string => {
-    return node.nodeFile.path
   }
 }

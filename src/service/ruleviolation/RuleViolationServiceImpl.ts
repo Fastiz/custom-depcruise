@@ -8,10 +8,10 @@ import { Node } from '../../model/graph/Node'
 
 export class RuleViolationServiceImpl implements RuleViolationService {
   findViolations = (graph: Node<SourceFile>, rules: ForbiddenDependencyRule[]): Violation[] => {
-    return this.findViolationsRecV2(graph, rules)
+    return this.findViolationsRec(graph, rules)
   }
 
-  findViolationsRecV2 = (dependencyTree: Node<SourceFile>, rules: ForbiddenDependencyRule[]): Violation[] => {
+  findViolationsRec = (dependencyTree: Node<SourceFile>, rules: ForbiddenDependencyRule[]): Violation[] => {
     if (dependencyTree.getChildren().length === 0) {
       return []
     }
@@ -26,7 +26,7 @@ export class RuleViolationServiceImpl implements RuleViolationService {
     })
 
     const childrenViolations = dependencyTree.getChildren().flatMap((dependency) => {
-      return this.findViolationsRecV2(dependency, rules)
+      return this.findViolationsRec(dependency, rules)
     })
 
     const allViolations = [
