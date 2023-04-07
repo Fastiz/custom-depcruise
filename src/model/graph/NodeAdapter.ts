@@ -1,4 +1,4 @@
-import { Node } from '../../model/graph/Node'
+import { Node } from './Node'
 
 export class NodeAdapter<NodeLikeStructure, NodeData> implements Node<NodeData> {
   readonly nodeLikeStructure: NodeLikeStructure

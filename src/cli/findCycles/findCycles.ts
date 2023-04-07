@@ -4,7 +4,7 @@ import { getDependencyTreeService } from '../../service/dependencytree/Dependenc
 import { getGraphTraversalService } from '../../service/graphtraversal/GraphTraversalServiceProvider'
 import { getFilterDependencies } from './filterDependencies/FilterDependenciesProvider'
 import { getDotFileBuilder } from '../exportDependencyGraph/dotFileBuilder/DotFileBuilderProvider'
-import { NodeAdapter } from '../../util/nodeadapter/NodeAdapter'
+import { NodeAdapter } from '../../model/graph/NodeAdapter'
 import { SourceFile } from '../../model/File'
 import { Node } from 'src/model/graph/Node'
 

@@ -4,7 +4,7 @@ import { getDependencyTreeService } from '../../service/dependencytree/Dependenc
 import { DependencyTreeNode } from '../../model/dependencyTreeNode/DependencyTreeNode'
 import { getGraphTraversalService } from '../../service/graphtraversal/GraphTraversalServiceProvider'
 import { getDotFileBuilder } from './dotFileBuilder/DotFileBuilderProvider'
-import { NodeAdapter } from '../../util/nodeadapter/NodeAdapter'
+import { NodeAdapter } from '../../model/graph/NodeAdapter'
 import { Node } from 'src/model/graph/Node'
 
 const extractNodeName = (node: DependencyTreeNode): string => {
