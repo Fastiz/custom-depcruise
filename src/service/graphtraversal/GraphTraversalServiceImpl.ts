@@ -2,6 +2,7 @@ import { GraphTraversalService } from './GraphTraversalService'
 import { DependencyTreeNode } from '../../model/dependencyTreeNode/DependencyTreeNode'
 import { Observer } from '../../util/observer'
 import { Node } from '../../model/graph/Node'
+import { GraphMapper } from './GraphMapper'
 
 export class GraphTraversalServiceImpl implements GraphTraversalService {
   traverseGraph = <NodeData> (
@@ -65,6 +66,15 @@ export class GraphTraversalServiceImpl implements GraphTraversalService {
     }
 
     return null
+  }
+
+  mapGraph = <Input, Output> (
+    graph: Node<Input>,
+    mapper: (input: Input) => Output,
+    keyExtractor: (input: Input) => string
+  ): Node<Output> => {
+    const graphMapper = new GraphMapper(graph, mapper, keyExtractor)
+    return graphMapper.get()
   }
 
   extractKeyFromNode = (node: DependencyTreeNode): string => {

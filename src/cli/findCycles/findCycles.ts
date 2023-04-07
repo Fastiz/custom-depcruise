@@ -4,10 +4,12 @@ import { getDependencyTreeService } from '../../service/dependencytree/Dependenc
 import { getGraphTraversalService } from '../../service/graphtraversal/GraphTraversalServiceProvider'
 import { getFilterDependencies } from './filterDependencies/FilterDependenciesProvider'
 import { getDotFileBuilder } from '../exportDependencyGraph/dotFileBuilder/DotFileBuilderProvider'
-import { DependencyTreeNode } from '../../model/dependencyTreeNode/DependencyTreeNode'
+import { NodeAdapter } from '../../util/nodeadapter/NodeAdapter'
+import { SourceFile } from '../../model/File'
+import { Node } from 'src/model/graph/Node'
 
-const extractNodeName = (node: DependencyTreeNode): string => {
-  return node.nodeFile.path
+const extractNodeName = (node: Node<SourceFile>): string => {
+  return node.getData().path
 }
 
 const findCycles = async (args: string[]): Promise<void> => {
@@ -42,16 +44,26 @@ const findCycles = async (args: string[]): Promise<void> => {
     throw Error('Invalid state exception')
   }
 
-  const readNode = (node: DependencyTreeNode): void => {
+  const readNode = (node: Node<SourceFile>): void => {
     const from = extractNodeName(node)
 
-    node.dependencies.forEach((dep) => {
+    node.getChildren().forEach((dep) => {
       const to = extractNodeName(dep)
       dotFileBuilder.addDependency(from, to)
     })
   }
 
-  graphTraversalService.traverseGraph(first, { next: readNode })
+  const rootNode = new NodeAdapter(
+    first,
+    node => node.dependencies,
+    node => node.nodeFile
+  )
+
+  graphTraversalService.traverseGraph(
+    rootNode,
+    { next: readNode },
+    node => extractNodeName(node)
+  )
 
   console.log(dotFileBuilder.buildContentString())
 }

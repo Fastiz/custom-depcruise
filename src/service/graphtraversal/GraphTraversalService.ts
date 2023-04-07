@@ -8,5 +8,12 @@ export interface GraphTraversalService {
     nodeObserver: Observer<Node<NodeData>>,
     nodeKeyExtractor: (node: Node<NodeData>
     ) => string) => void
+
+  mapGraph: <Input, Output>(
+    graph: Node<Input>,
+    mapper: (input: Input) => Output,
+    keyExtractor: (input: Input) => string
+  ) => Node<Output>
+
   findCycle: (root: DependencyTreeNode) => DependencyTreeNode[] | null
 }
