@@ -15,7 +15,7 @@ The file schema should be like the following:
 {
     "rules": [
         {
-            "name": "Dependencies should be instantiated only from the iocContainer",
+            "name": "{{Unique name for the rule}}",
             "fromPattern": "{{regex that matches the dependent module}}",
             "toPattern": "{{regex that matches the dependency module}}"
         },
@@ -44,8 +44,9 @@ Where:
 The program will print into the standard output the content of a .dot file. This .dot file can be converted into an image using [graphviz](https://www.graphviz.org/doc/info/command.html).
 
 #### Example graph
+![dependency-graph](https://user-images.githubusercontent.com/12635493/227739484-a51b3115-5560-4faa-b4d0-7fb906f7b7bd.png)
 
-
-## Drawbacks
+## Drawbacks and pitfalls
 - This is a very naive implementation and it is not optimized at all
 - Only works with files that have a `.ts` extension
+- The program takes the base path as the current working directory. This is used for mapping imports relative to the project to the absolute path in the computer.
