@@ -35,7 +35,7 @@ export class GraphTraversalServiceImpl implements GraphTraversalService {
     })
   }
 
-  findCycleV2 = <NodeData> (root: Node<NodeData>, keyExtractor: (input: NodeData) => string): Node<NodeData>[] | null => {
+  findCycle = <NodeData> (root: Node<NodeData>, keyExtractor: (input: NodeData) => string): Node<NodeData>[] | null => {
     const visitedNodes = new Set<string>()
     const recStack: Node<NodeData>[] = []
     return this.findCycleV2Rec(root, visitedNodes, recStack, keyExtractor)
@@ -62,41 +62,6 @@ export class GraphTraversalServiceImpl implements GraphTraversalService {
       }
 
       const foundCycleDown = this.findCycleV2Rec(dep, visitedNodes, newRectStack, keyExtractor)
-      if (foundCycleDown !== null) {
-        return foundCycleDown
-      }
-    }
-
-    return null
-  }
-
-  findCycle = (root: DependencyTreeNode): DependencyTreeNode[] | null => {
-    const visitedNodes = new Set<string>()
-    const recStack: DependencyTreeNode[] = []
-    return this.findCycleRec(root, visitedNodes, recStack)
-  }
-
-  findCycleRec = (current: DependencyTreeNode, visitedNodes: Set<string>, recStack: DependencyTreeNode[]): DependencyTreeNode[] | null => {
-    const currentNodeKey = this.extractKeyFromNode(current)
-
-    visitedNodes.add(currentNodeKey)
-    const newRectStack = [...recStack, current]
-
-    for (const dep of current.dependencies) {
-      const nodeKey = this.extractKeyFromNode(dep)
-
-      if (visitedNodes.has(nodeKey)) {
-        const visitedNodeInRecStackIndex = newRectStack
-          .findIndex((value) => this.extractKeyFromNode(value) === nodeKey)
-
-        if (visitedNodeInRecStackIndex === -1) {
-          continue
-        }
-
-        return newRectStack.slice(visitedNodeInRecStackIndex)
-      }
-
-      const foundCycleDown = this.findCycleRec(dep, visitedNodes, newRectStack)
       if (foundCycleDown !== null) {
         return foundCycleDown
       }

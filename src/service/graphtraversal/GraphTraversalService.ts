@@ -1,4 +1,3 @@
-import { DependencyTreeNode } from '../../model/dependencyTreeNode/DependencyTreeNode'
 import { Observer } from '../../util/observer'
 import { Node } from 'src/model/graph/Node'
 import { NodeAsync } from '../../model/graph/NodeAsync'
@@ -21,7 +20,5 @@ export interface GraphTraversalService {
     keyExtractor: (input: NodeData) => string
   ) => Promise<Node<NodeData>>
 
-  findCycle: (root: DependencyTreeNode) => DependencyTreeNode[] | null
-
-  findCycleV2: <NodeData>(root: Node<NodeData>, keyExtractor: (input: NodeData) => string) => Node<NodeData>[] | null
+  findCycle: <NodeData>(root: Node<NodeData>, keyExtractor: (input: NodeData) => string) => Node<NodeData>[] | null
 }

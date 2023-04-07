@@ -34,7 +34,7 @@ const findCycles = async (args: string[]): Promise<void> => {
     sourceFile => sourceFile.path
   )
 
-  const cycle = graphTraversalService.findCycleV2(dependencyGraph, sourceFile => sourceFile.path)
+  const cycle = graphTraversalService.findCycle(dependencyGraph, sourceFile => sourceFile.path)
 
   if (cycle === null) {
     console.log('There are no cycles')
