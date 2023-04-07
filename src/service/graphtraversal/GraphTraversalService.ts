@@ -6,8 +6,7 @@ export interface GraphTraversalService {
   traverseGraph: <NodeData>(
     root: Node<NodeData>,
     nodeObserver: Observer<Node<NodeData>>,
-    nodeKeyExtractor: (node: Node<NodeData>
-    ) => string) => void
+    keyExtractor: (data: NodeData) => string) => void
 
   mapGraph: <Input, Output>(
     graph: Node<Input>,

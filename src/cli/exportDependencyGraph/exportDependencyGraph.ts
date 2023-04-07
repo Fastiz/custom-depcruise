@@ -10,6 +10,10 @@ const extractNodeName = (node: Node<SourceFile>): string => {
   return node.getData().path
 }
 
+const keyExtractor = (sourceFile: SourceFile) => {
+  return sourceFile.path
+}
+
 export const exportDependencyGraphCli = async (args: string[]) => {
   const logger = getLogger()
 
@@ -27,7 +31,7 @@ export const exportDependencyGraphCli = async (args: string[]) => {
   const dotFileBuilder = getDotFileBuilder()
 
   const graphAsync = dependencyTreeService.buildDependencyTreeFromFilePath(rootFile)
-  const graph = await graphTraversalService.mapGraphAsyncToGraph(graphAsync, node => node.path)
+  const graph = await graphTraversalService.mapGraphAsyncToGraph(graphAsync, keyExtractor)
 
   const readNode = (node: Node<SourceFile>): void => {
     const from = extractNodeName(node)
@@ -41,7 +45,7 @@ export const exportDependencyGraphCli = async (args: string[]) => {
   graphTraversalService.traverseGraph(
     graph,
     { next: readNode },
-    node => extractNodeName(node)
+    keyExtractor
   )
 
   console.log(dotFileBuilder.buildContentString())

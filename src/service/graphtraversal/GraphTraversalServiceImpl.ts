@@ -4,34 +4,16 @@ import { Node } from '../../model/graph/Node'
 import { GraphMapper } from './GraphMapper'
 import { NodeAsync } from '../../model/graph/NodeAsync'
 import { GraphAsyncToGraphMapper } from './GraphAsyncToGraphMapper'
+import { GraphTraverser } from './GraphTraverser'
 
 export class GraphTraversalServiceImpl implements GraphTraversalService {
   traverseGraph = <NodeData> (
     root: Node<NodeData>,
     nodeObserver: Observer<Node<NodeData>>,
-    nodeKeyExtractor: (node: Node<NodeData>) => string
+    keyExtractor: (data: NodeData) => string
   ): void => {
-    const visitedNodes = new Set<string>()
-    this.traverseGraphRec(root, nodeObserver, visitedNodes, nodeKeyExtractor)
-  }
-
-  traverseGraphRec = <NodeData> (
-    current: Node<NodeData>,
-    nodeObserver: Observer<Node<NodeData>>,
-    visitedNodes: Set<string>,
-    nodeKeyExtractor: (node: Node<NodeData>) => string
-  ) => {
-    visitedNodes.add(nodeKeyExtractor(current))
-    nodeObserver.next(current)
-
-    current.getChildren().forEach((dep) => {
-      const nodeKey = nodeKeyExtractor(dep)
-      if (visitedNodes.has(nodeKey)) {
-        return
-      }
-
-      this.traverseGraphRec(dep, nodeObserver, visitedNodes, nodeKeyExtractor)
-    })
+    const graphTraverser = new GraphTraverser(root, nodeObserver, keyExtractor)
+    graphTraverser.traverseGraph()
   }
 
   findCycle = <NodeData> (root: Node<NodeData>, keyExtractor: (input: NodeData) => string): Node<NodeData>[] | null => {
