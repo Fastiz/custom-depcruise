@@ -7,8 +7,8 @@ import { getDotFileBuilder } from '../exportDependencyGraph/dotFileBuilder/DotFi
 import { SourceFile } from '../../model/File'
 import { Node } from 'src/model/graph/Node'
 
-const extractNodeName = (node: Node<SourceFile>): string => {
-  return node.getData().path
+const keyExtractor = (sourceFile: SourceFile) => {
+  return sourceFile.path
 }
 
 const findCycles = async (args: string[]): Promise<void> => {
@@ -34,14 +34,14 @@ const findCycles = async (args: string[]): Promise<void> => {
     sourceFile => sourceFile.path
   )
 
-  const cycle = graphTraversalService.findCycle(dependencyGraph, sourceFile => sourceFile.path)
+  const cycle = graphTraversalService.findCycle(dependencyGraph, keyExtractor)
 
   if (cycle === null) {
     console.log('There are no cycles')
     return
   }
 
-  const filteredCycle = filterDependencies.filter(cycle, sourceFile => sourceFile.path)
+  const filteredCycle = filterDependencies.filter(cycle, keyExtractor)
 
   const [first] = filteredCycle
 
@@ -50,10 +50,10 @@ const findCycles = async (args: string[]): Promise<void> => {
   }
 
   const readNode = (node: Node<SourceFile>): void => {
-    const from = extractNodeName(node)
+    const from = keyExtractor(node.getData())
 
     node.getChildren().forEach((dep) => {
-      const to = extractNodeName(dep)
+      const to = keyExtractor(dep.getData())
       dotFileBuilder.addDependency(from, to)
     })
   }
@@ -61,7 +61,7 @@ const findCycles = async (args: string[]): Promise<void> => {
   graphTraversalService.traverseGraph(
     first,
     { next: readNode },
-    node => extractNodeName(node)
+    keyExtractor
   )
 
   console.log(dotFileBuilder.buildContentString())
