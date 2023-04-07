@@ -2,7 +2,7 @@ import { Node } from './Node'
 
 export class MutableNode<Value> implements Node<Value> {
   readonly value: Value
-  readonly children: Node<Value>[]
+  children: Node<Value>[]
 
   constructor (value: Value, children: Node<Value>[]) {
     this.value = value
@@ -11,6 +11,10 @@ export class MutableNode<Value> implements Node<Value> {
 
   getChildren = (): Node<Value>[] => {
     return this.children
+  }
+
+  setChildren = (children: Node<Value>[]) => {
+    this.children = children
   }
 
   addChild = (child: Node<Value>): void => {

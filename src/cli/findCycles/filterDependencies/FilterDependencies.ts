@@ -1,5 +1,8 @@
-import { DependencyTreeNode } from '../../../model/dependencyTreeNode/DependencyTreeNode'
+import { Node } from '../../../model/graph/Node'
 
 export interface FilterDependencies {
-  filter: (nodes: DependencyTreeNode[]) => DependencyTreeNode[]
+  filter: <DataValue> (
+    nodes: Node<DataValue>[],
+    keyExtractor: (input: DataValue) => string
+  ) => Node<DataValue>[]
 }

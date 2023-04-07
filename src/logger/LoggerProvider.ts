@@ -1,6 +1,14 @@
 import { type Logger } from 'src/logger/Logger'
-import { NoOperationLogger } from './NoOperationLogger'
+import { LoggerImpl } from './LoggerImpl'
+import { VerbosityLevel, VerbosityLevelLoggerDecorator } from './VerbosityLevelLoggerDecorator'
+
+const logger = new LoggerImpl()
+const verbosityLevelLoggerDecorator = new VerbosityLevelLoggerDecorator(VerbosityLevel.ERROR, logger)
 
 export const getLogger = (): Logger => {
-  return new NoOperationLogger()
+  return verbosityLevelLoggerDecorator
+}
+
+export const setLoggerVerbosityLevel = (verbosityLevel: VerbosityLevel) => {
+  verbosityLevelLoggerDecorator.setVerbosityLevel(verbosityLevel)
 }

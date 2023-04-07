@@ -51,6 +51,9 @@ export class GraphMapper<Input, Output> {
         }
 
         this.subscribeToNodeCreated(childKey, nodeCreatedCallback)
+      } else {
+        const mappedChild = this.mapGraphRec(child)
+        mappedNode.addChild(mappedChild)
       }
     })
 

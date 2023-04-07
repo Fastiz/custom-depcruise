@@ -5,6 +5,8 @@ import { type DependencyTreeService } from 'src/service/dependencytree/Dependenc
 import { notUndefined } from '../../util/notUndefined'
 import { ImportDependency } from '../../model/ImportDependency'
 import path from 'path'
+import { NodeAsync } from '../../model/graph/NodeAsync'
+import { NodeAsyncAdapter } from '../../model/graph/NodeAsyncAdapter'
 
 export class DependencyTreeServiceImpl implements DependencyTreeService {
   readonly rootDirectory: string
@@ -13,6 +15,28 @@ export class DependencyTreeServiceImpl implements DependencyTreeService {
   constructor (rootDirectory: string, fileRepository: FileRepository) {
     this.rootDirectory = rootDirectory
     this.fileRepository = fileRepository
+  }
+
+  buildDependencyTreeFromFilePathV2 = (rootPath: string): NodeAsync<SourceFile> => {
+    const pathFromRoot = this.resolveRelativePathFromRoot(this.rootDirectory, rootPath)
+    const sourceFile: SourceFile = { path: pathFromRoot }
+    return new NodeAsyncAdapter(
+      sourceFile,
+      sourceFile => this.getNodeChildren(sourceFile),
+      sourceFile => Promise.resolve(sourceFile)
+    )
+  }
+
+  private getNodeChildren = async (sourceFile: SourceFile): Promise<SourceFile[]> => {
+    const currentDirectory = path.dirname(sourceFile.path)
+
+    const imports = await this.fileRepository.readImportsFromSourceFile(sourceFile)
+
+    return imports.map(({ to }) => {
+      const pathFromRoot = this.resolveRelativePathFromRoot(currentDirectory, to.path)
+
+      return { path: pathFromRoot }
+    })
   }
 
   buildDependencyTreeFromFilePath = async (rootPath: string): Promise<DependencyTreeNode> => {

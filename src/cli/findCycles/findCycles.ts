@@ -4,7 +4,6 @@ import { getDependencyTreeService } from '../../service/dependencytree/Dependenc
 import { getGraphTraversalService } from '../../service/graphtraversal/GraphTraversalServiceProvider'
 import { getFilterDependencies } from './filterDependencies/FilterDependenciesProvider'
 import { getDotFileBuilder } from '../exportDependencyGraph/dotFileBuilder/DotFileBuilderProvider'
-import { NodeAdapter } from '../../model/graph/NodeAdapter'
 import { SourceFile } from '../../model/File'
 import { Node } from 'src/model/graph/Node'
 
@@ -29,14 +28,20 @@ const findCycles = async (args: string[]): Promise<void> => {
   const filterDependencies = getFilterDependencies()
   const dotFileBuilder = getDotFileBuilder()
 
-  const dependencyGraph = await dependencyTreeService.buildDependencyTreeFromFilePath(rootFile)
-  const cycle = graphTraversalService.findCycle(dependencyGraph)
+  const dependencyGraphAsync = dependencyTreeService.buildDependencyTreeFromFilePathV2(rootFile)
+  const dependencyGraph = await graphTraversalService.mapGraphAsyncToGraph(
+    dependencyGraphAsync,
+    sourceFile => sourceFile.path
+  )
+
+  const cycle = graphTraversalService.findCycleV2(dependencyGraph, sourceFile => sourceFile.path)
 
   if (cycle === null) {
+    console.log('There are no cycles')
     return
   }
 
-  const filteredCycle = filterDependencies.filter(cycle)
+  const filteredCycle = filterDependencies.filter(cycle, sourceFile => sourceFile.path)
 
   const [first] = filteredCycle
 
@@ -53,14 +58,8 @@ const findCycles = async (args: string[]): Promise<void> => {
     })
   }
 
-  const rootNode = new NodeAdapter(
-    first,
-    node => node.dependencies,
-    node => node.nodeFile
-  )
-
   graphTraversalService.traverseGraph(
-    rootNode,
+    first,
     { next: readNode },
     node => extractNodeName(node)
   )
