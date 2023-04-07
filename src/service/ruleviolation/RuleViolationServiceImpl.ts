@@ -4,8 +4,40 @@ import { type ImportDependency } from 'src/model/ImportDependency'
 import { type Violation } from 'src/model/Violation'
 import { type RuleViolationService } from 'src/service/ruleviolation/RuleViolationService'
 import { notNull } from 'src/util/notNull'
+import { SourceFile } from '../../model/File'
+import { Node } from '../../model/graph/Node'
 
 export class RuleViolationServiceImpl implements RuleViolationService {
+  findViolationsV2 = (graph: Node<SourceFile>, rules: ForbiddenDependencyRule[]): Violation[] => {
+    return this.findViolationsRecV2(graph, rules)
+  }
+
+  findViolationsRecV2 = (dependencyTree: Node<SourceFile>, rules: ForbiddenDependencyRule[]): Violation[] => {
+    if (dependencyTree.getChildren().length === 0) {
+      return []
+    }
+
+    const nodeViolations = dependencyTree.getChildren().flatMap((dependency) => {
+      const importDependency = {
+        from: dependencyTree.getData(),
+        to: dependency.getData()
+      }
+
+      return this.applyRules(importDependency, rules)
+    })
+
+    const childrenViolations = dependencyTree.getChildren().flatMap((dependency) => {
+      return this.findViolationsRecV2(dependency, rules)
+    })
+
+    const allViolations = [
+      ...nodeViolations,
+      ...childrenViolations
+    ]
+
+    return this.filterUniqueViolations(allViolations)
+  }
+
   findViolations = (dependencyTree: DependencyTreeNode, rules: ForbiddenDependencyRule[]): Violation[] => {
     return this.findViolationsRec(dependencyTree, rules)
   }

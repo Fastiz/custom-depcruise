@@ -6,6 +6,7 @@ import { ForbiddenDependencyRule } from 'src/model/ForbiddenDependencyRule'
 import { getFileRepository } from '../../repository/FileRepositoryProvider'
 import { notNull } from '../../util/notNull'
 import { parseRules } from './mapper/ruleFileParser'
+import { getGraphTraversalService } from '../../service/graphtraversal/GraphTraversalServiceProvider'
 
 type Params = {
   rootFile: string
@@ -22,10 +23,12 @@ const violationsFromRuleFile = async (params: Params) => {
 
   const dependencyTreeService = getDependencyTreeService(rootDirectory)
   const ruleViolationService = getRuleViolationService()
+  const graphTraversalService = getGraphTraversalService()
 
-  const tree = await dependencyTreeService.buildDependencyTreeFromFilePath(rootFile)
+  const graphAsync = dependencyTreeService.buildDependencyTreeFromFilePathV2(rootFile)
+  const graph = await graphTraversalService.mapGraphAsyncToGraph(graphAsync, node => node.path)
 
-  const violations = ruleViolationService.findViolations(tree, rules)
+  const violations = ruleViolationService.findViolationsV2(graph, rules)
 
   violations.forEach(violation => {
     console.log(violation)
