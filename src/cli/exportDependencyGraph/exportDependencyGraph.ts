@@ -1,14 +1,13 @@
 import { getLogger } from '../../logger/LoggerProvider'
 import { notUndefined } from '../../util/notUndefined'
 import { getDependencyTreeService } from '../../service/dependencytree/DependencyTreeServiceProvider'
-import { DependencyTreeNode } from '../../model/dependencyTreeNode/DependencyTreeNode'
 import { getGraphTraversalService } from '../../service/graphtraversal/GraphTraversalServiceProvider'
 import { getDotFileBuilder } from './dotFileBuilder/DotFileBuilderProvider'
-import { NodeAdapter } from '../../model/graph/NodeAdapter'
 import { Node } from 'src/model/graph/Node'
+import { SourceFile } from '../../model/File'
 
-const extractNodeName = (node: DependencyTreeNode): string => {
-  return node.nodeFile.path
+const extractNodeName = (node: Node<SourceFile>): string => {
+  return node.getData().path
 }
 
 export const exportDependencyGraphCli = async (args: string[]) => {
@@ -27,27 +26,22 @@ export const exportDependencyGraphCli = async (args: string[]) => {
   const graphTraversalService = getGraphTraversalService()
   const dotFileBuilder = getDotFileBuilder()
 
-  const tree = await dependencyTreeService.buildDependencyTreeFromFilePath(rootFile)
+  const graphAsync = dependencyTreeService.buildDependencyTreeFromFilePathV2(rootFile)
+  const graph = await graphTraversalService.mapGraphAsyncToGraph(graphAsync, node => node.path)
 
-  const readNode = (node: Node<DependencyTreeNode>): void => {
-    const from = extractNodeName(node.getData())
+  const readNode = (node: Node<SourceFile>): void => {
+    const from = extractNodeName(node)
 
     node.getChildren().forEach((dep) => {
-      const to = extractNodeName(dep.getData())
+      const to = extractNodeName(dep)
       dotFileBuilder.addDependency(from, to)
     })
   }
 
-  const treeNode = new NodeAdapter(
-    tree,
-    (node) => node.dependencies,
-    (node) => node
-  )
-
   graphTraversalService.traverseGraph(
-    treeNode,
+    graph,
     { next: readNode },
-    (node) => node.getData().nodeFile.path
+    node => extractNodeName(node)
   )
 
   console.log(dotFileBuilder.buildContentString())
