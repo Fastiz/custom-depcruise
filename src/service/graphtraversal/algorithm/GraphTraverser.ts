@@ -1,5 +1,5 @@
-import { Node } from '../../model/graph/Node'
-import { Observer } from '../../util/observer'
+import { Node } from '../../../model/graph/Node'
+import { Observer } from '../../../util/observer'
 
 type NodeKey = string
 

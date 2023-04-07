@@ -1,7 +1,7 @@
-import { NodeAsync } from '../../model/graph/NodeAsync'
-import { ReadonlyNode } from '../../model/graph/ReadonlyNode'
-import { MutableNode } from '../../model/graph/MutableNode'
-import { Node } from '../../model/graph/Node'
+import { NodeAsync } from '../../../model/graph/NodeAsync'
+import { ReadonlyNode } from '../../../model/graph/ReadonlyNode'
+import { MutableNode } from '../../../model/graph/MutableNode'
+import { Node } from '../../../model/graph/Node'
 
 type NodeCreatedCallback<Input> = (node: Node<Input>) => void
 type NodeKey = string

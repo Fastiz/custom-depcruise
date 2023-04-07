@@ -1,11 +1,11 @@
 import { GraphTraversalService } from './GraphTraversalService'
 import { Observer } from '../../util/observer'
 import { Node } from '../../model/graph/Node'
-import { GraphMapper } from './GraphMapper'
+import { GraphMapper } from './algorithm/GraphMapper'
 import { NodeAsync } from '../../model/graph/NodeAsync'
-import { GraphAsyncToGraphMapper } from './GraphAsyncToGraphMapper'
-import { GraphTraverser } from './GraphTraverser'
-import { GraphCycleFinder } from './GraphCycleFinder'
+import { GraphAsyncToGraphMapper } from './algorithm/GraphAsyncToGraphMapper'
+import { GraphTraverser } from './algorithm/GraphTraverser'
+import { GraphCycleFinder } from './algorithm/GraphCycleFinder'
 
 export class GraphTraversalServiceImpl implements GraphTraversalService {
   traverseGraph = <NodeData> (

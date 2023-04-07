@@ -1,4 +1,4 @@
-import { Node } from '../../model/graph/Node'
+import { Node } from '../../../model/graph/Node'
 
 type NodeKey = string
 
