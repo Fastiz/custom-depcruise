@@ -5,6 +5,7 @@ Just playing around building a simple dependency cruiser.
 Features:
 - Find import violations specified from a configuration file
 - Create a graph of dependencies in .dot format
+- Find cycles
 
 ## How to run
 ### Import violations
